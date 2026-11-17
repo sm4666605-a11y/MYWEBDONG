@@ -300,3 +300,16 @@ footer b{color:var(--on-steel);font-family:Archivo,sans-serif;font-size:1.1rem}
 </script>
 </body>
 </html>
+<link rel="stylesheet" href="https://vdk-viber-runtime-prod.bot.botpress.host/edge/webchat.css" />
+<script src="https://vdk-viber-runtime-prod.bot.botpress.host/edge/webchat.js"></script>
+<script>
+  fetch("https://vdk-viber-runtime-prod.bot.botpress.host/edge/bots/0e9d3063-b660-4147-890b-2cbe6b0bcca3/config")
+    .then((res) => res.json())
+    .then(({ webchat }) =>
+      VdkEdgeWebchat.mount({ ...webchat, mode: "bubble", baseUrl: "https://vdk-viber-runtime-prod.bot.botpress.host", botId: "0e9d3063-b660-4147-890b-2cbe6b0bcca3" })
+    )
+</script>
+  <script src="https://cdn.botpress.cloud/webchat/..."></script>
+  <script src="https://files.bpcontent.cloud/..."></script>
+</body>
+</html>
