@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Load Path – a first-year civil engineering notebook</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e9ebe8; --surface:#f6f7f5; --ink:#15283b; --muted:#53626f; --line:#c3c9c6;
+  --steel:#17324d; --survey:#f2b705; --on-steel:#f6f7f5; --curve:#1f6f9c; --curve2:#b4492a;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10161c; --surface:#18212a; --ink:#e8ecef; --muted:#9aa8b3; --line:#2c3844;
+    --steel:#0b1218; --survey:#f2b705; --on-steel:#e8ecef; --curve:#5db6e8; --curve2:#ef8a63; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161c; --surface:#18212a; --ink:#e8ecef; --muted:#9aa8b3; --line:#2c3844;
+  --steel:#0b1218; --survey:#f2b705; --on-steel:#e8ecef; --curve:#5db6e8; --curve2:#ef8a63; color-scheme:dark;
+}
+html{height:auto;scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.05rem/1.6 "IBM Plex Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:Archivo,"Arial Narrow",Arial,sans-serif;line-height:1.05;margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--survey);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* top bar */
+header.bar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;max-width:1080px;margin:0 auto}
+.logo{font:800 1.2rem Archivo,Arial,sans-serif;text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo i{width:22px;height:22px;background:var(--survey);display:inline-block;clip-path:polygon(0 100%,50% 0,100% 100%,80% 100%,50% 40%,20% 100%)}
+nav{display:flex;gap:18px;align-items:center;font-weight:500}
+nav a{text-decoration:none;color:var(--muted)}
+nav a:hover{color:var(--ink)}
+#theme{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:.9rem}
+
+/* hero */
+.hero{padding:28px 0 56px}
+.hero h1{font-size:clamp(2.6rem,7vw,5.4rem);font-weight:800;letter-spacing:-.03em;max-width:12ch}
+.hero p.lead{max-width:52ch;color:var(--muted);font-size:1.15rem;margin:18px 0 0}
+
+/* analyzer */
+.lab{background:var(--steel);color:var(--on-steel);border-radius:14px;padding:24px;margin-top:32px;display:grid;grid-template-columns:1fr 300px;gap:24px}
+.lab h2{font-size:1.5rem;margin-bottom:4px}
+.lab .sub{color:#a9b8c4;margin:0 0 16px;font-size:.95rem}
+.plot{background:var(--surface);color:var(--ink);border-radius:10px;padding:8px;min-width:0}
+.plot svg{width:100%;height:auto;display:block}
+.controls{display:flex;flex-direction:column;gap:16px}
+.controls label{display:flex;justify-content:space-between;font-weight:500;font-size:.95rem}
+.controls output{font-variant-numeric:tabular-nums;color:var(--survey)}
+input[type=range]{width:100%;accent-color:var(--survey);height:28px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.stat{background:rgba(255,255,255,.08);border-radius:8px;padding:10px 12px}
+.stat b{display:block;font:700 1.35rem Archivo,sans-serif;font-variant-numeric:tabular-nums}
+.stat span{font-size:.8rem;color:#a9b8c4}
+
+/* svg classes */
+.ax{stroke:var(--line);stroke-width:1}
+.tx{fill:var(--muted);font:12px "IBM Plex Sans",sans-serif}
+.beam{fill:var(--steel)}
+.sup{fill:var(--survey);stroke:var(--steel);stroke-width:1.5}
+.load{stroke:var(--curve2);fill:var(--curve2);stroke-width:2.5}
+
+/* sections */
+section{padding:56px 0}
+section h2.t{font-size:clamp(1.9rem,4vw,2.8rem);font-weight:800;letter-spacing:-.02em;margin-bottom:28px;max-width:20ch}
+.topics{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:0;border-top:2px solid var(--ink)}
+.topic{padding:22px 20px 26px 0;border-bottom:1px solid var(--line)}
+.topic h3{font-size:1.3rem;margin-bottom:8px}
+.topic p{margin:0;color:var(--muted);font-size:.98rem}
+.tag{display:inline-block;margin-top:12px;padding:2px 10px;border-radius:99px;background:var(--survey);color:#15283b;font-size:.82rem;font-weight:500}
+
+.formulas{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.f{background:var(--surface);border-left:6px solid var(--survey);padding:18px 20px;border-radius:4px 10px 10px 4px}
+.f h3{font-size:1.05rem;margin-bottom:8px}
+.f code{display:block;font:500 1.05rem "IBM Plex Sans",monospace;margin:4px 0;color:var(--curve)}
+.f p{margin:8px 0 0;font-size:.92rem;color:var(--muted)}
+
+/* quiz */
+.quiz{background:var(--surface);border-radius:14px;padding:26px;max-width:720px}
+.quiz h3{font-size:1.4rem;margin-bottom:16px}
+.opts{display:grid;gap:10px}
+.opts button{text-align:left;font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:12px 14px;border-radius:8px;cursor:pointer}
+.opts button:hover{border-color:var(--ink)}
+.opts button.ok{background:#2c7a4b;color:#fff;border-color:#2c7a4b}
+.opts button.no{background:#a63d2f;color:#fff;border-color:#a63d2f}
+#fb{min-height:1.6em;margin:14px 0 0;color:var(--muted)}
+#next{margin-top:10px;font:inherit;border:0;background:var(--steel);color:var(--on-steel);padding:10px 18px;border-radius:8px;cursor:pointer}
+
+footer{background:var(--steel);color:#a9b8c4;padding:36px 0 44px;margin-top:40px;font-size:.95rem}
+footer b{color:var(--on-steel);font-family:Archivo,sans-serif;font-size:1.1rem}
+
+@media(max-width:860px){.lab{grid-template-columns:1fr}.hero h1{max-width:none}nav a.hide{display:none}}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="logo" href="#top"><i></i>Load Path</a>
+  <nav>
+    <a class="hide" href="#lab">Beam lab</a>
+    <a class="hide" href="#topics">Topics</a>
+    <a class="hide" href="#formulas">Formulas</a>
+    <a href="#quiz">Quiz</a>
+    <button id="theme" aria-label="Toggle light or dark mode">Theme</button>
+  </nav>
+</header>
+
+<main id="top">
+<div class="wrap hero">
+  <h1>Where every load finds the ground.</h1>
+  <p class="lead">A first-year civil engineering notebook. Move the loads on a beam below and watch the reactions, shear force and bending moment change as you do.</p>
+
+  <div class="lab" id="lab">
+    <div>
+      <h2>Simply supported beam</h2>
+      <p class="sub">One point load plus a uniform load across the full span.</p>
+      <div class="plot"><svg id="svg" viewBox="0 0 700 470" role="img" aria-label="Beam with shear force and bending moment diagrams"></svg></div>
+    </div>
+    <div class="controls">
+      <div><label for="L">Span L <output id="oL"></output></label><input id="L" type="range" min="2" max="12" step="0.5" value="8"></div>
+      <div><label for="P">Point load P <output id="oP"></output></label><input id="P" type="range" min="0" max="100" step="5" value="40"></div>
+      <div><label for="a">Distance a from left <output id="oa"></output></label><input id="a" type="range" min="0.5" max="11.5" step="0.5" value="3"></div>
+      <div><label for="w">Uniform load w <output id="ow"></output></label><input id="w" type="range" min="0" max="20" step="1" value="5"></div>
+      <div class="stats">
+        <div class="stat"><b id="rA"></b><span>Reaction at A</span></div>
+        <div class="stat"><b id="rB"></b><span>Reaction at B</span></div>
+        <div class="stat"><b id="vM"></b><span>Max shear</span></div>
+        <div class="stat"><b id="mM"></b><span>Max moment</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="topics"><div class="wrap">
+  <h2 class="t">What we study in year one</h2>
+  <div class="topics">
+    <div class="topic"><h3>Engineering mechanics</h3><p>Forces, equilibrium, free-body diagrams and the reactions that hold a structure still.</p><span class="tag">Beam lab above</span></div>
+    <div class="topic"><h3>Building materials</h3><p>How concrete, steel, timber and bricks behave under load, and why each is used where it is.</p><span class="tag">Strength and durability</span></div>
+    <div class="topic"><h3>Surveying</h3><p>Measuring distances, angles and levels so that a design can be set out accurately on site.</p><span class="tag">Levelling, theodolite</span></div>
+    <div class="topic"><h3>Engineering drawing</h3><p>Plans, sections and elevations: the common language between designer and builder.</p><span class="tag">AutoCAD basics</span></div>
+    <div class="topic"><h3>Fluid mechanics</h3><p>Pressure, flow and head loss in pipes and channels, the base of water supply and drainage.</p><span class="tag">Coming in semester 2</span></div>
+    <div class="topic"><h3>Environmental science</h3><p>Water, air and soil quality, and how infrastructure affects the world around it.</p><span class="tag">Sustainability</span></div>
+  </div>
+</div></section>
+
+<section id="formulas"><div class="wrap">
+  <h2 class="t">Formulas worth remembering</h2>
+  <div class="formulas">
+    <div class="f"><h3>Stress</h3><code>σ = P / A</code><p>Force divided by cross-sectional area.</p></div>
+    <div class="f"><h3>Strain and Young's modulus</h3><code>ε = ΔL / L</code><code>E = σ / ε</code><p>Stiffness of a material in its elastic range.</p></div>
+    <div class="f"><h3>Beam reactions, central point load</h3><code>R = P / 2</code><code>M<sub>max</sub> = PL / 4</code><p>For a simply supported span.</p></div>
+    <div class="f"><h3>Beam under uniform load</h3><code>R = wL / 2</code><code>M<sub>max</sub> = wL² / 8</code><p>Maximum moment sits at mid-span.</p></div>
+    <div class="f"><h3>Bending stress</h3><code>σ = M y / I</code><p>Largest at the outer fibre, zero at the neutral axis.</p></div>
+    <div class="f"><h3>Equilibrium</h3><code>ΣFy = 0, ΣM = 0</code><p>Start every statics problem here.</p></div>
+  </div>
+</div></section>
+
+<section id="quiz"><div class="wrap">
+  <h2 class="t">Check what you remember</h2>
+  <div class="quiz">
+    <h3 id="q"></h3>
+    <div class="opts" id="opts"></div>
+    <p id="fb" aria-live="polite"></p>
+    <button id="next" hidden>Next question</button>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <b>Load Path</b><br>
+  Made by a first-year civil engineering student. Replace this line with your name, roll number and subject code.
+</div></footer>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var svg=$("svg"), NS="http://www.w3.org/2000/svg";
+
+  // theme
+  var root=document.documentElement;
+  $("theme").addEventListener("click",function(){
+    var dark=getComputedStyle(root).colorScheme==="dark";
+    root.setAttribute("data-theme",dark?"light":"dark");
+  });
+
+  function el(t,a,txt){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e}
+  function poly(pts,cls,stroke,fill){
+    return el("polygon",{points:pts.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1)}).join(" "),
+      fill:fill,"fill-opacity":.22,stroke:stroke,"stroke-width":2,"stroke-linejoin":"round"});
+  }
+
+  function draw(){
+    var L=+$("L").value, P=+$("P").value, a=Math.min(+$("a").value,L-0.5), w=+$("w").value;
+    $("a").max=L-0.5;
+    if(+$("a").value>L-0.5)$("a").value=L-0.5;
+    $("oL").textContent=L+" m"; $("oP").textContent=P+" kN"; $("oa").textContent=a+" m"; $("ow").textContent=w+" kN/m";
+
+    var RA=P*(L-a)/L+w*L/2, RB=P*a/L+w*L/2;
+    var N=240, V=[], M=[], vmax=0, mmax=0;
+    for(var i=0;i<=N;i++){
+      var x=L*i/N;
+      var v=RA-w*x-(x>=a?P:0);
+      var m=RA*x-w*x*x/2-(x>=a?P*(x-a):0);
+      V.push(v); M.push(m);
+      if(Math.abs(v)>vmax)vmax=Math.abs(v);
+      if(Math.abs(m)>mmax)mmax=Math.abs(m);
+    }
+    $("rA").textContent=RA.toFixed(1)+" kN"; $("rB").textContent=RB.toFixed(1)+" kN";
+    $("vM").textContent=vmax.toFixed(1)+" kN"; $("mM").textContent=mmax.toFixed(1)+" kN·m";
+
+    while(svg.firstChild)svg.removeChild(svg.firstChild);
+    var x0=60, x1=660, W=x1-x0, X=function(x){return x0+W*x/L};
+
+    // beam + supports
+    svg.appendChild(el("rect",{x:x0,y:78,width:W,height:12,class:"beam",rx:2}));
+    svg.appendChild(el("polygon",{points:x0+",92 "+(x0-14)+",116 "+(x0+14)+",116",class:"sup"}));
+    svg.appendChild(el("circle",{cx:x1,cy:104,r:12,class:"sup"}));
+    svg.appendChild(el("text",{x:x0-4,y:136,class:"tx"},"A"));
+    svg.appendChild(el("text",{x:x1-4,y:136,class:"tx"},"B"));
+    // UDL
+    if(w>0){
+      var top=38;
+      svg.appendChild(el("line",{x1:x0,y1:top,x2:x1,y2:top,class:"load"}));
+      for(var k=0;k<=20;k++){
+        var ux=x0+W*k/20;
+        svg.appendChild(el("line",{x1:ux,y1:top,x2:ux,y2:74,class:"load"}));
+        svg.appendChild(el("polygon",{points:(ux-4)+",68 "+(ux+4)+",68 "+ux+",76",class:"load"}));
+      }
+      svg.appendChild(el("text",{x:x0+6,y:30,class:"tx"},"w = "+w+" kN/m"));
+    }
+    // point load
+    if(P>0){
+      var px=X(a);
+      svg.appendChild(el("line",{x1:px,y1:6,x2:px,y2:70,class:"load","stroke-width":4}));
+      svg.appendChild(el("polygon",{points:(px-8)+",64 "+(px+8)+",64 "+px+",78",class:"load"}));
+      svg.appendChild(el("text",{x:px+10,y:16,class:"tx",style:"font-weight:600"},"P = "+P+" kN"));
+    }
+    // diagrams
+    function diagram(vals,yc,half,maxv,color,title,unit){
+      svg.appendChild(el("text",{x:x0,y:yc-half-10,class:"tx",style:"font-weight:600"},title));
+      svg.appendChild(el("line",{x1:x0,y1:yc,x2:x1,y2:yc,class:"ax"}));
+      var sc=maxv>0?half/maxv:0, pts=[[x0,yc]];
+      vals.forEach(function(v,i){pts.push([x0+W*i/N,yc-v*sc])});
+      pts.push([x1,yc]);
+      svg.appendChild(poly(pts,"",color,color));
+      return sc;
+    }
+    // SFD
+    var ycS=235, ycM=410;
+    diagram(V,ycS,55,vmax||1,"var(--curve)","Shear force (kN)");
+    diagram(M.map(function(m){return m}),ycM,55,mmax||1,"var(--curve2)","Bending moment (kN·m), plotted on the tension side");
+    // labels
+    var vTop=V[0], vEnd=V[N];
+    svg.appendChild(el("text",{x:x0+4,y:ycS-(vTop/(vmax||1))*55-6,class:"tx"},vTop.toFixed(1)));
+    svg.appendChild(el("text",{x:x1-40,y:ycS-(vEnd/(vmax||1))*55+(vEnd<0?16:-6),class:"tx"},vEnd.toFixed(1)));
+    var mi=M.indexOf(Math.max.apply(null,M));
+    svg.appendChild(el("text",{x:x0+W*mi/N-26,y:ycM-(M[mi]/(mmax||1))*55-8,class:"tx",style:"font-weight:600"},M[mi].toFixed(1)));
+    // x ticks
+    for(var t=0;t<=L;t+=(L>8?2:1)){
+      svg.appendChild(el("text",{x:X(t)-4,y:464,class:"tx"},t+""));
+    }
+    svg.appendChild(el("text",{x:x1-30,y:464,class:"tx"},"x (m)"));
+  }
+  ["L","P","a","w"].forEach(function(i){$(i).addEventListener("input",draw)});
+  draw();
+
+  // quiz
+  var Q=[
+    {q:"A simply supported beam of span 6 m carries a 30 kN point load at mid-span. What is each reaction?",o:["10 kN","15 kN","30 kN","60 kN"],c:1,e:"By symmetry each support carries half the load: 30 / 2 = 15 kN."},
+    {q:"Where is bending stress zero in a beam section?",o:["At the top fibre","At the bottom fibre","At the neutral axis","At the support only"],c:2,e:"Stress is proportional to distance from the neutral axis, so it is zero there."},
+    {q:"What does Young's modulus E measure?",o:["Strength at failure","Stiffness in the elastic range","Density","Ductility"],c:1,e:"E = stress / strain, the slope of the elastic part of the stress–strain curve."},
+    {q:"For a uniform load w on a simply supported span L, the maximum moment is…",o:["wL / 2","wL² / 4","wL² / 8","wL³ / 12"],c:2,e:"The maximum moment occurs at mid-span and equals wL² / 8."}
+  ], qi=0, locked=false;
+  function showQ(){
+    var q=Q[qi]; locked=false;
+    $("q").textContent=q.q; $("fb").textContent=""; $("next").hidden=true;
+    var box=$("opts"); box.innerHTML="";
+    q.o.forEach(function(t,i){
+      var b=document.createElement("button"); b.textContent=t;
+      b.addEventListener("click",function(){
+        if(locked)return; locked=true;
+        var kids=box.children;
+        kids[q.c].className="ok";
+        if(i!==q.c)b.className="no";
+        $("fb").textContent=(i===q.c?"Correct. ":"Not quite. ")+q.e;
+        $("next").hidden=false;
+      });
+      box.appendChild(b);
+    });
+  }
+  $("next").addEventListener("click",function(){qi=(qi+1)%Q.length;showQ()});
+  showQ();
+})();
+</script>
+</body>
+</html>
